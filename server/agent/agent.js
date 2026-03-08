@@ -1,4 +1,4 @@
-import openai from "../config/openai.js";
+import ollama from "../config/ollama.js";
 import { calculate, getWeather, getCurrentTime } from "./tools.js";
 
 const tools = {
@@ -21,40 +21,52 @@ Use this to get weather information.
 3. getCurrentTime()
 Use this when user asks for time.
 
-If a tool is required respond ONLY in JSON format:
+Rules:
+
+- If a tool is required respond ONLY in JSON format:
 
 {
  "tool": "tool_name",
  "input": "input_value"
 }
 
-Otherwise respond normally.
+- After receiving tool results, convert them into a natural language response.
+- Do NOT show JSON or tool names to the user.
+- Always provide clean and helpful responses.
 `;
 
 export const runAgent = async (message) => {
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: message },
-      ],
-    });
-
-    const content = response.choices[0].message.content;
+    const content = await ollama([
+      { role: "system", content: systemPrompt },
+      { role: "user", content: message },
+    ]);
 
     // Attempt tool parsing
     try {
       const parsed = JSON.parse(content);
 
       if (parsed.tool && tools[parsed.tool]) {
-        const result = await tools[parsed.tool](parsed.input);
+        const result = parsed.input
+          ? await tools[parsed.tool](parsed.input)
+          : await tools[parsed.tool]();
 
-        return result;
+        const finalResponse = await ollama([
+          { role: "system", content: systemPrompt },
+          { role: "user", content: message },
+          {
+            role: "assistant",
+            content: JSON.stringify(parsed),
+          },
+          {
+            role: "tool",
+            content: result,
+          },
+        ]);
+
+        return finalResponse;
       }
-    } catch {
-      // Not a tool call
-    }
+    } catch {}
 
     return content;
   } catch (error) {

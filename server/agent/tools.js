@@ -1,5 +1,10 @@
 export const getWeather = async (city) => {
-  return `Weather in ${city} is 30°C`;
+  return {
+    city,
+    temperature: "30°C",
+    condition: "Partly Cloudy",
+    humidity: "60%",
+  };
 };
 
 export const calculate = async (expression) => {
