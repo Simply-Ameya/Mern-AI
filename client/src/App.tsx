@@ -2,8 +2,7 @@ import Chat from "./components/Chat";
 
 function App() {
   return (
-    <div>
-      <h1 style={{ textAlign: "center" }}>AI Developer Agent</h1>
+    <div className="h-screen bg-gray-100 flex justify-center p-4">
       <Chat />
     </div>
   );
