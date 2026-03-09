@@ -1,4 +1,4 @@
-import ollama from "../config/ollama.js";
+import llm from "../config/llm.js";
 import { calculate, getWeather, getCurrentTime } from "./tools.js";
 
 const tools = {
@@ -10,46 +10,29 @@ const tools = {
 const systemPrompt = `
 You are an AI developer assistant.
 
-You have access to the following tools:
+You have access to these tools:
 
 1. calculate(expression)
-Use for math calculations.
-
 2. getWeather(city)
-Use for weather information.
-
 3. getCurrentTime()
-Use for current time.
 
-Rules:
+RULES:
 
-1. If the user asks something that requires a tool, respond ONLY in JSON:
+1. If a calculation is requested, you MUST use the calculate tool.
+Never compute math yourself.
+
+2. If a tool is required, respond ONLY with valid JSON:
 
 {
  "tool": "tool_name",
- "input": "input_value"
+ "input": "tool_input"
 }
 
-2. After receiving the tool result, use it to generate a helpful natural language answer.
+Do NOT include explanations or results with the tool call.
 
-Example:
+3. If no tool is needed, respond normally in natural language.
 
-User: What is the weather in Mumbai?
-
-Assistant calls tool:
-{
- "tool": "getWeather",
- "input": "Mumbai"
-}
-
-Tool returns:
-{ "city": "Mumbai", "temperature": "28°C", "condition": "Partly Cloudy" }
-
-Final response:
-The weather in Mumbai! According to my weather tool, the current weather in Mumbai is:
-{ "city": "Mumbai", "temperature": "28°C", "condition": "Partly Cloudy" }
-
-Always explain the tool result clearly to the user.
+4. After receiving the tool result, generate a helpful natural language answer for the user.
 `;
 
 export const runAgent = async (message) => {
@@ -60,13 +43,21 @@ export const runAgent = async (message) => {
     ];
 
     while (true) {
-      const content = await ollama(messages);
+      const content = await llm(messages);
 
-      let parsed;
+      let parsed = null;
 
-      try {
-        parsed = JSON.parse(content);
-      } catch {
+      const jsonStart = content.indexOf("{");
+      const jsonEnd = content.lastIndexOf("}");
+
+      if (jsonStart !== -1 && jsonEnd !== -1) {
+        try {
+          const jsonString = content.slice(jsonStart, jsonEnd + 1);
+          parsed = JSON.parse(jsonString);
+        } catch {}
+      }
+
+      if (!parsed) {
         return content;
       }
 
@@ -75,16 +66,21 @@ export const runAgent = async (message) => {
           ? await tools[parsed.tool](parsed.input)
           : await tools[parsed.tool]();
 
-        // assistant tool call
+        // Save the tool call
         messages.push({
           role: "assistant",
           content: JSON.stringify(parsed),
         });
 
-        // tool result
+        // Provide tool result clearly
         messages.push({
-          role: "tool",
-          content: typeof result === "string" ? result : JSON.stringify(result),
+          role: "system",
+          content: `The tool "${parsed.tool}" returned the following result:
+
+${JSON.stringify(result)}
+
+Use this information to generate the final answer for the user.
+Do NOT call a tool again. Do NOT return JSON.`,
         });
 
         continue;

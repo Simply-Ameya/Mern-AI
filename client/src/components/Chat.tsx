@@ -90,7 +90,7 @@ const Chat = memo(() => {
           <p className="text-xs text-gray-500">Ask me anything!!!</p>
         </div>
 
-        <div className="text-xs text-gray-400">MERN + Ollama AI</div>
+        <div className="text-xs text-gray-400">MERN + Gorq AI</div>
       </div>
       <div
         ref={messagesRef}

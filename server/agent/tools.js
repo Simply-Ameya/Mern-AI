@@ -10,13 +10,17 @@ export const getWeather = async (city) => {
 export const calculate = async (expression) => {
   try {
     const result = eval(expression);
-    return result.toString();
+    return {
+      expression,
+      result,
+    };
   } catch {
-    return "Invalid expression";
+    return { error: "Invalid expression" };
   }
 };
 
 export const getCurrentTime = async () => {
-  const now = new Date();
-  return now.toLocaleTimeString();
+  return {
+    time: new Date().toLocaleTimeString(),
+  };
 };
