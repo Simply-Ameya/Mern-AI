@@ -86,9 +86,9 @@ const Chat = memo(() => {
     <div className="h-full w-full bg-white shadow-lg rounded-xl flex flex-col">
       <div className="px-6 py-4 border-b bg-white sticky top-0 z-10 rounded-t-xl flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-gray-800">LaughLine</h1>
+          <h1 className="text-lg font-semibold text-gray-800">PunchlineAI</h1>
           <p className="text-xs text-gray-500">
-            Where every question gets a punchline
+            Serious questions, ridiculous answers
           </p>
         </div>
 
