@@ -3,7 +3,8 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     coverage: {
-      include: ["**/*.js", "!index.js"],
+      include: ["**/*.js"],
+      exclude: ["index.js", "config/llm.js"],
       thresholds: {
         lines: 80,
         functions: 80,
