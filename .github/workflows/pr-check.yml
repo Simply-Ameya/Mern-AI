@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  test:
+  frontend-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,3 +27,23 @@ jobs:
       - name: Run tests with coverage
         run: npm run test:coverage -- --coverage.thresholds.lines=80 --coverage.thresholds.functions=80 --coverage.thresholds.statements=80 --coverage.thresholds.branches=80
         working-directory: client
+
+  backend-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: server
+
+      - name: Run tests with coverage
+        run: npm test
+        working-directory: server
