@@ -12,6 +12,4 @@ app.use(express.json());
 
 app.use("/api/chat", chatRoutes);
 
-const PORT = process.env.PORT || 5000;
-
 export default app;
