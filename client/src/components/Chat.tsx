@@ -100,6 +100,7 @@ const Chat = memo(() => {
       >
         {messages.map((m, i) => (
           <div
+            data-testid="message-bubble"
             key={i}
             className={`flex items-end gap-2 animate-[fadeIn_0.25s_ease-in] ${
               m.role === "user" ? "justify-end" : "justify-start"
