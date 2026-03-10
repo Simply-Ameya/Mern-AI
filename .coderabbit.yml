@@ -1,0 +1,14 @@
+language: "en-US"
+reviews:
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  path_instructions:
+    - path: "client/src/**"
+      instructions: |
+        - Check for proper TypeScript types, no use of 'any'
+        - Check for missing error handling
+        - Check for potential performance issues
+        - Check test coverage for new components
