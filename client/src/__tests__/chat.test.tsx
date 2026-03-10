@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import userEvent from "@testing-library/user-event";
 import Chat from "../components/Chat";
 import { sendMessage } from "../api";
@@ -10,11 +10,15 @@ vi.mock("../api", () => ({
 
 const mockSendMessage = sendMessage as ReturnType<typeof vi.fn>;
 
-beforeEach(() => {
-  vi.clearAllMocks();
-});
-
 describe("Chat Component", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it("renders the chat header correctly", () => {
     render(<Chat />);
     expect(screen.getByText("PunchlineAI")).toBeInTheDocument();
@@ -215,5 +219,7 @@ describe("Chat Component", () => {
         behavior: "smooth",
       });
     });
+
+    scrollToSpy.mockRestore();
   });
 });
