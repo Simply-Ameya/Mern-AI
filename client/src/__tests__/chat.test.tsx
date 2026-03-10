@@ -197,8 +197,6 @@ describe("Chat Component", () => {
   it("does not scroll when messagesRef is null", () => {
     const { unmount } = render(<Chat />);
     unmount();
-    // No error should be thrown when component unmounts and ref becomes null
-    expect(true).toBe(true);
   });
 
   it("scrolls to bottom when new message is added", async () => {
